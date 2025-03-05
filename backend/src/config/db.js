@@ -1,7 +1,20 @@
+// src/config/db.js
 const { Sequelize } = require('sequelize');
 const dotenv = require('dotenv');
+const path = require('path');
 
-dotenv.config();
+// Load environment-specific variables
+if (process.env.NODE_ENV === 'test') {
+  console.log('Loading TEST environment variables');
+  dotenv.config({ path: path.resolve(__dirname, '../../.env.test') });
+} else {
+  console.log('Loading DEVELOPMENT environment variables');
+  dotenv.config();
+}
+
+console.log('Environment:', process.env.NODE_ENV);
+console.log('Database:', process.env.DB_NAME);
+console.log('User:', process.env.DB_USER);
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
