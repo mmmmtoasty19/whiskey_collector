@@ -1,4 +1,4 @@
-const { Collection, Whiskey } = require('../models/Whiskey');
+const { Collection, Whiskey } = require('../models');
 
 // Get user's collection
 exports.getUserCollection = async (req, res) => {

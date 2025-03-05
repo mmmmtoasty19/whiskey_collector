@@ -1,4 +1,4 @@
-const { Whiskey } = require('../models/Whiskey');
+const { Whiskey } = require('../models');
 const { Op } = require('sequelize');
 
 // Get all whiskies

@@ -1,4 +1,4 @@
-const { Rating, Whiskey, User } = require('../models/Whiskey');
+const { Rating, Whiskey, User } = require('../models');
 
 // Get all ratings for a whiskey
 exports.getWhiskeyRatings = async (req, res) => {

@@ -1,11 +1,14 @@
+// src/models/index.js
 const { sequelize } = require('../config/db');
-const User = require('./User');
-const Whiskey = require('./Whiskey');
-const Collection = require('./Collection');
-const Rating = require('./Rating');
+const { DataTypes } = require('sequelize');
 
-// Define relationships
+// Initialize models
+const User = require('./User')(sequelize);
+const Whiskey = require('./Whiskey')(sequelize);
+const Collection = require('./Collection')(sequelize);
+const Rating = require('./Rating')(sequelize);
 
+// Define associations
 User.hasMany(Collection);
 Collection.belongsTo(User);
 
@@ -18,8 +21,7 @@ Rating.belongsTo(User);
 Whiskey.hasMany(Rating);
 Rating.belongsTo(Whiskey);
 
-// Exports
-
+// Export models
 module.exports = {
   User,
   Whiskey,

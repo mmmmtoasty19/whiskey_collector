@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { User } = require('../models/User');
+const { User } = require('../models');
 const { Op } = require('sequelize');
 
 exports.register = async (req, res) => {
