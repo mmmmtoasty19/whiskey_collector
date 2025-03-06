@@ -1,9 +1,56 @@
+/**
+ * Whiskey API Endpoints Test Suite
+ * ===============================
+ * 
+ * This test suite verifies the functionality of the Whiskey API endpoints, ensuring
+ * that the CRUD operations work as expected and that authentication requirements
+ * are properly enforced.
+ * 
+ * Test Coverage:
+ * -------------
+ * - GET /api/whiskies - Retrieves all whiskies
+ * - GET /api/whiskies/:id - Retrieves a specific whiskey by ID
+ * - POST /api/whiskies - Creates a new whiskey (requires authentication)
+ * - PUT /api/whiskies/:id - Updates an existing whiskey (requires authentication)
+ * - DELETE /api/whiskies/:id - Deletes a whiskey (requires authentication)
+ * - GET /api/whiskies/search - Searches whiskies by query parameters
+ * 
+ * Dependencies:
+ * ------------
+ * - Database with Whiskey model properly initialized
+ * - User model for authentication
+ * - JWT for authentication token
+ * 
+ * Environment Requirements:
+ * -----------------------
+ * - TEST_DATABASE_URL: URL to test database
+ * - JWT_SECRET: Secret key for JWT token generation/validation
+ * 
+ * Test Data:
+ * ---------
+ * - Creates test whiskey records for verification
+ * - Creates test user for authentication testing
+ * 
+ * @version 1.0.0
+ * @author Kyle B.
+ * @last-updated 2025-03-06
+ * @changes 
+ *   - 2025-03-06: Initial implementation
+ */
 const request = require('supertest');
 const app = require('../src/app');
 const { User, Whiskey } = require('../src/models');
 const jwt = require('jsonwebtoken');
 
 describe('Whiskey Endpoints', () => {
+   /**
+   * Test suite setup
+   * - Creates test user for authenticated routes
+   * - Creates sample whiskey for retrieval tests
+   * - Generates authentication token
+   * 
+   * @setup Creates adminUser, token, and testWhiskey
+   */
   let token;
   let adminUser; // Store the user object
   let testWhiskey;
@@ -52,9 +99,21 @@ describe('Whiskey Endpoints', () => {
       throw error;
     }
   });
-
+  /**
+  * GET /api/whiskies Tests
+  * 
+  * Verifies that the endpoint correctly returns all whiskey records.
+  * 
+  * Success Criteria:
+  * - Status code 200
+  * - Response is an array
+  * - At least one whiskey is returned
+  * 
+  * @public Endpoint does not require authentication
+  */
   describe('GET /api/whiskies', () => {
     it('should return all whiskies', async () => {
+      
       const res = await request(app).get('/api/whiskies');
       
       expect(res.statusCode).toEqual(200);
@@ -62,7 +121,29 @@ describe('Whiskey Endpoints', () => {
       expect(res.body.length).toBeGreaterThan(0);
     });
   });
-
+  /**
+  * GET /api/whiskies/:id Tests
+  * 
+  * Verifies retrieving a single whiskey by ID.
+  * 
+  * Test Cases:
+  * 1. Valid ID - returns whiskey details
+  * 2. Invalid ID - returns 404 error
+  * 
+  * Expected Whiskey Object Properties:
+  * - id: number
+  * - name: string
+  * - distillery: string
+  * - type: string
+  * - country: string
+  * - region: string (optional)
+  * - age: number (optional)
+  * - abv: number (optional)
+  * - price: number (optional)
+  * - description: string (optional)
+  * 
+  * @public Endpoint does not require authentication
+  */
   describe('GET /api/whiskies/:id', () => {
     it('should return whiskey by id', async () => {
       const res = await request(app).get(`/api/whiskies/${testWhiskey.id}`);
@@ -78,7 +159,31 @@ describe('Whiskey Endpoints', () => {
       expect(res.statusCode).toEqual(404);
     });
   });
-
+  /**
+   * POST /api/whiskies Tests
+   * 
+   * Verifies creating new whiskey records.
+   * 
+   * Test Cases:
+   * 1. Authorized creation - creates whiskey record
+   * 2. Unauthorized creation - returns 401 error
+   * 
+   * Required Request Body:
+   * - name: Whiskey name
+   * - distillery: Distillery name
+   * - type: Whiskey type (e.g., Bourbon, Scotch)
+   * - country: Country of origin
+   * 
+   * Optional Request Body:
+   * - region: Region within country
+   * - age: Age in years
+   * - abv: Alcohol by volume percentage
+   * - price: Retail price
+   * - description: Description text
+   * - imageUrl: URL to whiskey image
+   * 
+   * @protected Endpoint requires valid JWT token
+  */
   describe('POST /api/whiskies', () => {
     it('should create a new whiskey with auth', async () => {
       const newWhiskey = {
