@@ -1,47 +1,79 @@
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import Router from 'svelte-spa-router';
+  import { wrap } from 'svelte-spa-router/wrap';
+  import { authStore } from './stores/authStore';
+  
+  import Nav from './components/Nav.svelte';
+  import Home from './routes/Home.svelte';
+  import Login from './components/auth/Login.svelte';
+  import Register from './components/auth/Register.svelte';
+  import WhiskeyList from './components/whiskey/WhiskeyList.svelte';
+  import WhiskeyDetail from './components/whiskey/WhiskeyDetail.svelte';
+  import RatingForm from './components/rating/RatingForm.svelte';
+  import CollectionList from './components/collection/CollectionList.svelte';
+  import CollectionForm from './components/collection/CollectionForm.svelte';
+  import UserRatings from './components/rating/UserRatings.svelte';
+  import NotFound from './routes/NotFound.svelte';
+  
+  // Auth guard for protected routes
+  function authGuard(detail) {
+    if (!$authStore.isAuthenticated) {
+      return { redirect: '/login' };
+    }
+  }
+  
+  // Define routes
+  const routes = {
+    // Public routes
+    '/': Home,
+    '/login': Login,
+    '/register': Register,
+    '/whiskies': WhiskeyList,
+    '/whiskey/:id': WhiskeyDetail,
+    
+    // Protected routes
+    '/collection': wrap({
+      component: CollectionList,
+      conditions: [authGuard]
+    }),
+    '/collection/add/:id': wrap({
+      component: CollectionForm,
+      conditions: [authGuard]
+    }),
+    '/collection/edit/:id': wrap({
+      component: CollectionForm,
+      conditions: [authGuard]
+    }),
+    '/rate/:id': wrap({
+      component: RatingForm,
+      conditions: [authGuard]
+    }),
+    '/ratings': wrap({
+      component: UserRatings,
+      conditions: [authGuard]
+    }),
+    
+    // 404 Not Found
+    '*': NotFound
+  };
 </script>
 
-<main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
-</main>
+<div class="min-h-screen bg-amber-50">
+  <Nav />
+  <main class="container mx-auto px-4 py-6">
+    <Router {routes} />
+  </main>
+  <footer class="bg-amber-800 text-white py-6 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p>© {new Date().getFullYear()} Whiskey Collection App</p>
+    </div>
+  </footer>
+</div>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
+  :global(body) {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
   }
 </style>
